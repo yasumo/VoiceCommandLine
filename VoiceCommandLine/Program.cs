@@ -41,28 +41,33 @@ namespace VoiceCommandLine
             var voiceText = WindowHandleUtils.Operation.FindTargetButton(WindowHandleUtils.Operation.GetWindow(mainWindowHandle), null, "WindowsForms10.RichEdit20W.app.0.378734a", 0);
             IntPtr voiceTextHWnd = voiceText.hWnd;
             WindowHandleUtils.Operation.SendMessage(voiceTextHWnd, WindowHandleUtils.Operation.WM_SETTEXT, 0x00000000, setTextSB);
+            //テキストセット前に再生ボタンを押すと駄目なので少しスリープ
             System.Threading.Thread.Sleep(200);
 
-
+            //再生ボタンを押す
             WindowHandleUtils.Operation.SendMessage(playBtnHWnd, WindowHandleUtils.Operation.MK_LCLICED, WindowHandleUtils.Operation.MK_LBUTTON, 0x000A000A);
+            //ボイスロイドがしゃべってる間スリープさせたい、スリープが長すぎると、AVG側のクリックができなくなるので調整が難しい・・・
             System.Threading.Thread.Sleep(500);
 
         }
 
+        //ボイスロイドのEXEのウィンドウハンドルを見つけるメソッドですが、結月ゆかりEXでしか試してないです
         static private void initVoiceroid()
         {
-
             if (Process.GetProcessesByName("VOICEROID").Count() == 0)
             {
+                //ボイスロイドが起動していなかったら起動する
                 System.Diagnostics.Process p = new System.Diagnostics.Process();
                 //起動する実行ファイルのパスを設定する
-                p.StartInfo.FileName = "E:\\Program Files (x86)\\AHS\\VOICEROID+\\YukariEX\\VOICEROID.exe";
+                //p.StartInfo.FileName = "E:\\Program Files (x86)\\AHS\\VOICEROID+\\YukariEX\\VOICEROID.exe";
+                p.StartInfo.FileName = Properties.Settings.Default.exepath;
                 //起動する。プロセスが起動した時はTrueを返す。
                 bool result = p.Start();
+                //起動待ち時間10秒
                 System.Threading.Thread.Sleep(10000);
             }
 
-            // Tweenのトップウィンドウのウィンドウハンドル（※見つかることを前提としている）
+            // VoiceRoidが見つかることを前提としている
             mainWindowHandle = Process.GetProcessesByName("VOICEROID")[0].MainWindowHandle;
         }
     }
